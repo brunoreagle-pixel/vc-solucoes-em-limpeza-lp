@@ -22,7 +22,7 @@
 <link rel="preload" href="fonts/albert-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script>
   document.documentElement.classList.add('js');
-  try { if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro'); } catch (e) {}
+  try { if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro', 'motion'); } catch (e) {}
 </script>
 <script type="application/ld+json">
 {
@@ -119,6 +119,26 @@ p{text-wrap:pretty}
 .hero .lead{color:var(--on-navy-2)}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
 .hero-note{color:var(--on-navy-2);font-size:15px}
+/* tipo de espaço que gira */
+.rot{display:none}
+.motion .rot{position:relative;display:block;height:1.62em;margin-top:6px;overflow:hidden;color:#fff;font-size:clamp(24px,2.6vw,34px);font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.rot-w{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;transform:translateY(105%);transition:transform .6s var(--ease),opacity .6s var(--ease)}
+.rot-w em{position:relative;font-style:normal}
+.rot-w em::after{content:"";position:absolute;left:0;right:0;bottom:-.08em;height:.11em;border-radius:.1em;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .55s var(--ease) .28s}
+.rot-w.on{opacity:1;transform:none}
+.rot-w.on em::after{transform:scaleX(1)}
+.rot-w.out{opacity:0;transform:translateY(-105%)}
+.motion .rot-full{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* faixa em movimento */
+.mq{overflow:hidden;background:var(--teal);color:var(--navy)}
+.mq-track{display:flex;width:max-content}
+.mq-set{display:flex;flex:none;align-items:center;gap:26px;padding:17px 13px}
+.mq-set span{font-size:clamp(14px,1.5vw,18px);font-weight:800;letter-spacing:.24em;line-height:1;text-transform:uppercase;white-space:nowrap}
+.mq-set svg{flex:none;width:13px;height:auto;color:#fff}
+.motion .mq-track{animation:mq 46s linear infinite}
+.mq:hover .mq-track{animation-play-state:paused}
+@keyframes mq{to{transform:translate3d(-50%,0,0)}}
 @media (max-width:560px){
   .hero-actions .btn{flex:1 1 100%}
 }
@@ -151,15 +171,51 @@ p{text-wrap:pretty}
 .sec-head{display:grid;gap:16px;max-width:780px;margin-bottom:clamp(36px,5vw,56px)}
 .sec-head p{max-width:60ch;color:var(--slate);font-size:clamp(17px,1.3vw,19px)}
 
-/* serviços */
-.svc-list{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
-.svc{display:grid;gap:8px;padding:24px 0;border-bottom:1px solid var(--line)}
-.svc p{max-width:54ch;color:var(--slate)}
-.svc-btn{justify-self:start;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;margin-top:6px;border:1.5px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font-size:15px;font-weight:700;transition:background .2s,border-color .2s,color .2s}
-.svc-btn:hover{border-color:var(--navy);background:var(--navy);color:#fff}
-@media (min-width:880px){
-  .svc{grid-template-columns:minmax(0,.95fr) minmax(0,1.25fr) auto;align-items:center;gap:36px;padding:26px 0}
-  .svc-btn{margin-top:0}
+/* serviços: explorador animado */
+.xp{display:grid;gap:18px}
+.xp-tabs{display:flex;gap:8px;margin:0 calc(var(--gutter) * -1);padding:2px var(--gutter) 4px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none}
+.xp-tabs::-webkit-scrollbar{display:none}
+.xp-tab{position:relative;flex:none;display:flex;align-items:center;min-height:48px;padding:0 18px;overflow:hidden;border:1.5px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font-size:15px;font-weight:700;line-height:1.2;text-align:left;white-space:nowrap;scroll-snap-align:start;transition:background .25s,border-color .25s,color .25s}
+.xp-tab:hover{border-color:var(--navy)}
+.xp-tab[aria-selected="true"]{border-color:var(--navy);background:var(--navy);color:#fff}
+.xp-timer{position:absolute;left:18px;right:18px;bottom:8px;height:2px;overflow:hidden;border-radius:2px;background:rgba(255,255,255,.18);opacity:0;transition:opacity .2s}
+.xp-timer::after{content:"";position:absolute;inset:0;background:var(--teal);transform:scaleX(0);transform-origin:left}
+.xp.holding .xp-tab[aria-selected="true"] .xp-timer{opacity:1}
+.xp.holding .xp-tab[aria-selected="true"] .xp-timer::after{animation:xpTimer var(--xphold,2600ms) linear forwards}
+.xp.paused .xp-timer::after{animation-play-state:paused}
+@keyframes xpTimer{to{transform:scaleX(1)}}
+.xp-panel{display:grid;gap:24px;padding:clamp(22px,3.6vw,48px);border-radius:24px;background:var(--navy);color:#fff}
+.xp-panel[hidden]{display:none}
+.xp-panel:focus-visible{outline:3px solid var(--teal);outline-offset:4px}
+.xp-ring{position:relative;justify-self:center;width:clamp(140px,34vw,220px);aspect-ratio:1}
+.xp-ring .r{display:block;width:100%;height:100%;transform:rotate(-90deg)}
+.xp-track{fill:none;stroke:rgba(255,255,255,.12);stroke-width:7}
+.xp-prog{fill:none;stroke:url(#xpGrad);stroke-width:7;stroke-linecap:round;stroke-dasharray:326.73;stroke-dashoffset:0;transition:stroke-dashoffset .45s var(--ease)}
+.xp-mid{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:4px;text-align:center}
+.xp-pct{font-size:clamp(32px,4.4vw,48px);font-weight:800;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.xp-pct small{margin-left:2px;font-size:.5em;font-weight:700}
+.xp-state{color:var(--on-navy-2);font-size:13px;font-weight:600}
+.xp-state .s-done{display:none;color:#fff}
+.xp-panel.done .xp-state .s-run{display:none}
+.xp-panel.done .xp-state .s-done{display:inline}
+.xp-spark{position:absolute;right:2%;top:3%;width:15%;height:auto;color:#fff;transition:transform .55s cubic-bezier(.3,1.7,.5,1)}
+.motion .xp-panel:not(.done) .xp-spark{transform:scale(0) rotate(-40deg)}
+.xp-body{display:grid;gap:12px;align-content:start}
+.xp-body h3{font-size:clamp(22px,2.3vw,30px);font-weight:800;letter-spacing:-.02em}
+.xp-body > p{max-width:52ch;color:var(--on-navy-2)}
+.xp-list{display:grid;gap:10px;margin:8px 0 12px;padding:0;list-style:none}
+.xp-list li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px;align-items:center;font-size:16px;line-height:1.35;transition:color .3s}
+.xp-list li::before{content:"";width:26px;height:26px;border:1.5px solid var(--teal);border-radius:50%;background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2305203D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/14px no-repeat;transition:background-color .3s,border-color .3s,transform .45s cubic-bezier(.3,1.7,.5,1)}
+.motion .xp-list li:not(.done){color:var(--on-navy-2)}
+.motion .xp-list li:not(.done)::before{border-color:rgba(255,255,255,.28);background-color:transparent;background-image:none;transform:scale(.8)}
+.xp-cta{justify-self:start}
+@media (max-width:560px){.xp-cta{justify-self:stretch}}
+@media (min-width:900px){
+  .xp{grid-template-columns:minmax(0,.78fr) minmax(0,1.7fr);gap:24px;align-items:start}
+  .xp-tabs{flex-direction:column;margin:0;padding:0;overflow:visible}
+  .xp-tab{min-height:58px;padding:0 20px;border-radius:16px;font-size:16px;white-space:normal}
+  .xp-timer{left:20px;right:20px;bottom:9px}
+  .xp-panel{grid-template-columns:auto minmax(0,1fr);align-items:center;gap:clamp(28px,4vw,56px)}
 }
 
 /* resultados */
@@ -170,6 +226,8 @@ p{text-wrap:pretty}
 .tile figcaption{position:absolute;left:12px;bottom:12px;padding:6px 12px;border-radius:999px;background:rgba(5,32,61,.8);color:#fff;font-size:13px;font-weight:700;line-height:1.2;pointer-events:none}
 .zoom{display:block;width:100%;height:100%;padding:0;border:0;background:none;cursor:zoom-in}
 .zoom img{transition:transform .9s var(--ease)}
+.zoom:focus-visible{outline-offset:-4px}
+.motion .px{transform:translate3d(0,var(--py,0px),0) scale(1.12)}
 @media (hover:hover){.zoom:hover img{transform:scale(1.03)}}
 .t-video{grid-column:1;grid-row:1 / span 2}
 .t-office{grid-column:2;grid-row:1}
@@ -190,10 +248,17 @@ p{text-wrap:pretty}
 .sobre-grid{display:grid;gap:28px;grid-template-areas:"h" "txt" "facts"}
 .sobre-grid h2{grid-area:h}
 .sobre-txt{grid-area:txt;display:grid;gap:18px;color:var(--slate);font-size:clamp(17px,1.3vw,19px)}
-.facts{grid-area:facts;margin:0;border-top:1px solid var(--line)}
-.facts div{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
-.facts dt{color:var(--slate);font-size:15px}
-.facts dd{color:var(--ink);font-weight:700}
+.tl{grid-area:facts;position:relative;display:grid;gap:26px;margin:0;padding:0 0 0 36px;list-style:none}
+.tl::before,.tl::after{content:"";position:absolute;left:9px;top:8px;width:2px;border-radius:2px}
+.tl::before{bottom:8px;background:var(--mist-2)}
+.tl::after{height:calc((100% - 16px) * var(--tp,1));background:var(--teal)}
+.motion .tl{--tp:0}
+.tl li{position:relative;display:grid;gap:2px}
+.tl li::before{content:"";position:absolute;left:-36px;top:2px;width:20px;height:20px;border:2px solid var(--teal);border-radius:50%;background:var(--teal);box-shadow:0 0 0 5px rgba(8,168,156,.14);transition:border-color .35s,background .35s,box-shadow .35s}
+.motion .tl li:not(.on)::before{border-color:var(--mist-2);background:#fff;box-shadow:none}
+.tl-when{color:var(--teal-ink);font-size:14px;font-weight:700}
+.tl-when b{font-weight:800;font-variant-numeric:tabular-nums}
+.tl-what{color:var(--ink);font-size:clamp(18px,1.6vw,21px);font-weight:700;line-height:1.3}
 @media (min-width:900px){
   .sobre-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"h txt" "facts txt";column-gap:clamp(48px,6vw,96px);row-gap:40px;align-items:start}
 }
@@ -243,6 +308,17 @@ p{text-wrap:pretty}
 .err{color:#B4321C;font-size:14px;font-weight:600}
 .err:empty{display:none}
 .fine{color:var(--slate);font-size:13px;text-align:center}
+.pv-prog{display:grid;gap:8px;padding:12px 18px 14px;border-bottom:1px solid var(--line)}
+.pv-prog span{color:var(--slate);font-size:13px;font-weight:600}
+.pv-prog.full span{color:var(--teal-ink)}
+.pv-bar{height:6px;overflow:hidden;border-radius:6px;background:var(--mist-2)}
+.pv-bar i{display:block;width:0;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--ring),var(--teal));transition:width .5s var(--ease)}
+.bubble .ln{border-radius:4px;transition:background-color 1.4s ease}
+.bubble .ln.flash{background-color:rgba(8,168,156,.24);transition:none}
+.motion .pv-foot .btn.ready{animation:pronto 2.4s var(--ease) infinite}
+@keyframes pronto{0%{box-shadow:0 0 0 0 rgba(8,168,156,.5)}70%,100%{box-shadow:0 0 0 14px rgba(8,168,156,0)}}
+.steps li::before{transition:background-color .3s,color .3s}
+.steps li.done::before{content:"";background:var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2305203D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/16px no-repeat}
 
 /* dúvidas */
 .faq{max-width:880px;border-top:1px solid var(--line)}
@@ -256,6 +332,10 @@ p{text-wrap:pretty}
 .faq details[open] .pm::before,.faq details[open] .pm::after{background:#fff}
 .faq details[open] .pm::after{transform:rotate(0deg)}
 .faq details p{max-width:64ch;padding:0 50px 24px 0;color:var(--slate)}
+.faq-a{overflow:hidden}
+.faq details.closing .pm{border-color:var(--line);background:transparent}
+.faq details.closing .pm::before,.faq details.closing .pm::after{background:var(--ink)}
+.faq details.closing .pm::after{transform:rotate(90deg)}
 
 /* fechamento */
 .fim{background:var(--navy);color:#fff}
@@ -277,6 +357,9 @@ p{text-wrap:pretty}
 .wa-float{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:40;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#25D366;color:#fff;box-shadow:0 12px 28px -10px rgba(3,24,48,.6);transform:translateY(160%);transition:transform .45s var(--ease)}
 .wa-float.show{transform:none}
 .wa-float svg{width:30px;height:30px}
+.wa-float::after{content:"";position:absolute;inset:0;border:2px solid #25D366;border-radius:50%;opacity:0;pointer-events:none}
+.motion .wa-float.show::after{animation:waPulse 3.2s ease-out 1.2s infinite}
+@keyframes waPulse{0%{opacity:.75;transform:scale(1)}80%,100%{opacity:0;transform:scale(1.7)}}
 
 /* ampliar foto */
 .lb{width:min(1100px,94vw);max-width:none;max-height:92vh;padding:0;border:0;border-radius:18px;background:var(--navy);color:#fff;overflow:hidden}
@@ -322,7 +405,7 @@ p{text-wrap:pretty}
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1 id="hero-t" class="two">Ambiente limpo, <span class="lt">cliente bem recebido.</span></h1>
-        <p class="lead">Limpeza profissional para salas comerciais, escritórios, clínicas, condomínios e pós-obra. Também atendemos residências.</p>
+        <p class="lead">Limpeza profissional para<span class="rot-full"> salas comerciais, escritórios, clínicas, condomínios, lojas, pós-obra e residências.</span><span class="rot" aria-hidden="true"><span class="rot-w on"><em>salas comerciais</em>.</span><span class="rot-w"><em>escritórios</em>.</span><span class="rot-w"><em>clínicas</em>.</span><span class="rot-w"><em>condomínios</em>.</span><span class="rot-w"><em>lojas</em>.</span><span class="rot-w"><em>pós-obra</em>.</span><span class="rot-w"><em>residências</em>.</span></span></p>
         <div class="hero-actions">
           <a class="btn btn-teal" href="#orcamento">Pedir orçamento</a>
           <a class="btn btn-line wa-link" href="#orcamento" target="_blank" rel="noopener">
@@ -353,45 +436,169 @@ p{text-wrap:pretty}
     </div>
   </section>
 
+  <!-- FAIXA EM MOVIMENTO -->
+  <div class="mq" aria-hidden="true">
+    <div class="mq-track">
+      <div class="mq-set">
+        <span>Salas comerciais</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Escritórios</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Clínicas</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Consultórios</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Condomínios</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Pós-obra</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Lojas</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Salas de treinamento</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Residências</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+      </div>
+      <div class="mq-set">
+        <span>Salas comerciais</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Escritórios</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Clínicas</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Consultórios</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Condomínios</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Pós-obra</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Lojas</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Salas de treinamento</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+        <span>Residências</span><svg viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+      </div>
+    </div>
+  </div>
+
   <!-- SERVIÇOS -->
   <section class="sec" id="servicos" aria-labelledby="svc-t">
     <div class="wrap">
       <div class="sec-head">
         <h2 id="svc-t">O que a gente limpa</h2>
-        <p>Nosso foco é atender empresas, e as residências também são bem-vindas. Escolha um serviço para montar seu pedido de orçamento.</p>
+        <p>Nosso foco é atender empresas, e as residências também são bem-vindas. Escolha um espaço e veja o que entra na limpeza.</p>
       </div>
-      <ul class="svc-list">
-        <li class="svc">
-          <h3>Salas comerciais e escritórios</h3>
-          <p>Limpeza para a sua equipe trabalhar bem e o cliente chegar num lugar cuidado.</p>
-          <button class="svc-btn" type="button" data-tipo="Sala comercial ou escritório" aria-label="Pedir orçamento de limpeza de sala comercial ou escritório">Pedir orçamento</button>
-        </li>
-        <li class="svc">
-          <h3>Clínicas e consultórios</h3>
-          <p>Recepção, salas e banheiros em ordem. Na saúde, limpeza é a primeira coisa que o paciente repara.</p>
-          <button class="svc-btn" type="button" data-tipo="Clínica ou consultório" aria-label="Pedir orçamento de limpeza de clínica ou consultório">Pedir orçamento</button>
-        </li>
-        <li class="svc">
-          <h3>Condomínios</h3>
-          <p>Áreas comuns limpas para moradores e visitantes, na frequência que o prédio precisa.</p>
-          <button class="svc-btn" type="button" data-tipo="Condomínio" aria-label="Pedir orçamento de limpeza de condomínio">Pedir orçamento</button>
-        </li>
-        <li class="svc">
-          <h3>Limpeza pós-obra</h3>
-          <p>Tiramos a poeira, os respingos de tinta e os restos de rejunte que a obra deixa.</p>
-          <button class="svc-btn" type="button" data-tipo="Pós-obra" aria-label="Pedir orçamento de limpeza pós-obra">Pedir orçamento</button>
-        </li>
-        <li class="svc">
-          <h3>Lojas e outros estabelecimentos</h3>
-          <p>Limpeza em geral para lojas, salas de treinamento e espaços de atendimento.</p>
-          <button class="svc-btn" type="button" data-tipo="Loja ou outro estabelecimento" aria-label="Pedir orçamento de limpeza de loja ou outro estabelecimento">Pedir orçamento</button>
-        </li>
-        <li class="svc">
-          <h3>Residências</h3>
-          <p>Casas e apartamentos, com o mesmo cuidado do atendimento empresarial.</p>
-          <button class="svc-btn" type="button" data-tipo="Residência" aria-label="Pedir orçamento de limpeza residencial">Pedir orçamento</button>
-        </li>
-      </ul>
+      <div class="xp" id="xp">
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="xpGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#8FD9D1"/><stop offset="1" stop-color="#08A89C"/></linearGradient></defs></svg>
+        <div class="xp-tabs" role="tablist" aria-label="Tipos de espaço">
+          <button class="xp-tab" type="button" role="tab" id="xp-t0" aria-selected="true" aria-controls="xp-p0">Salas comerciais e escritórios<i class="xp-timer" aria-hidden="true"></i></button>
+          <button class="xp-tab" type="button" role="tab" id="xp-t1" aria-selected="false" aria-controls="xp-p1" tabindex="-1">Clínicas e consultórios<i class="xp-timer" aria-hidden="true"></i></button>
+          <button class="xp-tab" type="button" role="tab" id="xp-t2" aria-selected="false" aria-controls="xp-p2" tabindex="-1">Condomínios<i class="xp-timer" aria-hidden="true"></i></button>
+          <button class="xp-tab" type="button" role="tab" id="xp-t3" aria-selected="false" aria-controls="xp-p3" tabindex="-1">Limpeza pós-obra<i class="xp-timer" aria-hidden="true"></i></button>
+          <button class="xp-tab" type="button" role="tab" id="xp-t4" aria-selected="false" aria-controls="xp-p4" tabindex="-1">Lojas e outros estabelecimentos<i class="xp-timer" aria-hidden="true"></i></button>
+          <button class="xp-tab" type="button" role="tab" id="xp-t5" aria-selected="false" aria-controls="xp-p5" tabindex="-1">Residências<i class="xp-timer" aria-hidden="true"></i></button>
+        </div>
+
+        <div class="xp-panel" id="xp-p0" role="tabpanel" aria-labelledby="xp-t0" tabindex="0">
+          <div class="xp-ring" aria-hidden="true">
+            <svg class="r" viewBox="0 0 120 120"><circle class="xp-track" cx="60" cy="60" r="52"/><circle class="xp-prog" cx="60" cy="60" r="52"/></svg>
+            <span class="xp-mid"><span class="xp-pct"><b>100</b><small>%</small></span><span class="xp-state"><span class="s-run">do checklist</span><span class="s-done">Pronto!</span></span></span>
+            <svg class="xp-spark" viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+          </div>
+          <div class="xp-body">
+            <h3>Salas comerciais e escritórios</h3>
+            <p>Limpeza para a sua equipe trabalhar bem e o cliente chegar num lugar cuidado.</p>
+            <ul class="xp-list">
+              <li>Mesas, cadeiras e superfícies sem pó</li>
+              <li>Piso limpo, da recepção às salas</li>
+              <li>Banheiros e copa higienizados</li>
+              <li>Lixeiras esvaziadas</li>
+              <li>Vidros e portas sem marcas</li>
+            </ul>
+            <button class="btn btn-teal xp-cta" type="button" data-tipo="Sala comercial ou escritório">Pedir orçamento deste serviço</button>
+          </div>
+        </div>
+
+        <div class="xp-panel" id="xp-p1" role="tabpanel" aria-labelledby="xp-t1" tabindex="0" hidden>
+          <div class="xp-ring" aria-hidden="true">
+            <svg class="r" viewBox="0 0 120 120"><circle class="xp-track" cx="60" cy="60" r="52"/><circle class="xp-prog" cx="60" cy="60" r="52"/></svg>
+            <span class="xp-mid"><span class="xp-pct"><b>100</b><small>%</small></span><span class="xp-state"><span class="s-run">do checklist</span><span class="s-done">Pronto!</span></span></span>
+            <svg class="xp-spark" viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+          </div>
+          <div class="xp-body">
+            <h3>Clínicas e consultórios</h3>
+            <p>Recepção, salas e banheiros em ordem. Na saúde, limpeza é a primeira coisa que o paciente repara.</p>
+            <ul class="xp-list">
+              <li>Recepção pronta para receber</li>
+              <li>Salas de atendimento limpas</li>
+              <li>Banheiros higienizados</li>
+              <li>Maçanetas e pontos de contato limpos</li>
+              <li>Piso limpo e seco</li>
+            </ul>
+            <button class="btn btn-teal xp-cta" type="button" data-tipo="Clínica ou consultório">Pedir orçamento deste serviço</button>
+          </div>
+        </div>
+
+        <div class="xp-panel" id="xp-p2" role="tabpanel" aria-labelledby="xp-t2" tabindex="0" hidden>
+          <div class="xp-ring" aria-hidden="true">
+            <svg class="r" viewBox="0 0 120 120"><circle class="xp-track" cx="60" cy="60" r="52"/><circle class="xp-prog" cx="60" cy="60" r="52"/></svg>
+            <span class="xp-mid"><span class="xp-pct"><b>100</b><small>%</small></span><span class="xp-state"><span class="s-run">do checklist</span><span class="s-done">Pronto!</span></span></span>
+            <svg class="xp-spark" viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+          </div>
+          <div class="xp-body">
+            <h3>Condomínios</h3>
+            <p>Áreas comuns limpas para moradores e visitantes, na frequência que o prédio precisa.</p>
+            <ul class="xp-list">
+              <li>Hall de entrada e portaria</li>
+              <li>Escadas e corredores</li>
+              <li>Elevadores</li>
+              <li>Salão de festas e áreas de lazer</li>
+            </ul>
+            <button class="btn btn-teal xp-cta" type="button" data-tipo="Condomínio">Pedir orçamento deste serviço</button>
+          </div>
+        </div>
+
+        <div class="xp-panel" id="xp-p3" role="tabpanel" aria-labelledby="xp-t3" tabindex="0" hidden>
+          <div class="xp-ring" aria-hidden="true">
+            <svg class="r" viewBox="0 0 120 120"><circle class="xp-track" cx="60" cy="60" r="52"/><circle class="xp-prog" cx="60" cy="60" r="52"/></svg>
+            <span class="xp-mid"><span class="xp-pct"><b>100</b><small>%</small></span><span class="xp-state"><span class="s-run">do checklist</span><span class="s-done">Pronto!</span></span></span>
+            <svg class="xp-spark" viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+          </div>
+          <div class="xp-body">
+            <h3>Limpeza pós-obra</h3>
+            <p>Tiramos a poeira, os respingos de tinta e os restos de rejunte que a obra deixa.</p>
+            <ul class="xp-list">
+              <li>Poeira fina da obra</li>
+              <li>Respingos de tinta</li>
+              <li>Restos de rejunte e cimento</li>
+              <li>Pisos, rodapés e vidros</li>
+              <li>Espaço pronto para uso</li>
+            </ul>
+            <button class="btn btn-teal xp-cta" type="button" data-tipo="Pós-obra">Pedir orçamento deste serviço</button>
+          </div>
+        </div>
+
+        <div class="xp-panel" id="xp-p4" role="tabpanel" aria-labelledby="xp-t4" tabindex="0" hidden>
+          <div class="xp-ring" aria-hidden="true">
+            <svg class="r" viewBox="0 0 120 120"><circle class="xp-track" cx="60" cy="60" r="52"/><circle class="xp-prog" cx="60" cy="60" r="52"/></svg>
+            <span class="xp-mid"><span class="xp-pct"><b>100</b><small>%</small></span><span class="xp-state"><span class="s-run">do checklist</span><span class="s-done">Pronto!</span></span></span>
+            <svg class="xp-spark" viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+          </div>
+          <div class="xp-body">
+            <h3>Lojas e outros estabelecimentos</h3>
+            <p>Limpeza em geral para lojas, salas de treinamento e espaços de atendimento.</p>
+            <ul class="xp-list">
+              <li>Área de atendimento</li>
+              <li>Vitrine e vidros</li>
+              <li>Piso pronto para o movimento do dia</li>
+              <li>Banheiros e áreas internas</li>
+            </ul>
+            <button class="btn btn-teal xp-cta" type="button" data-tipo="Loja ou outro estabelecimento">Pedir orçamento deste serviço</button>
+          </div>
+        </div>
+
+        <div class="xp-panel" id="xp-p5" role="tabpanel" aria-labelledby="xp-t5" tabindex="0" hidden>
+          <div class="xp-ring" aria-hidden="true">
+            <svg class="r" viewBox="0 0 120 120"><circle class="xp-track" cx="60" cy="60" r="52"/><circle class="xp-prog" cx="60" cy="60" r="52"/></svg>
+            <span class="xp-mid"><span class="xp-pct"><b>100</b><small>%</small></span><span class="xp-state"><span class="s-run">do checklist</span><span class="s-done">Pronto!</span></span></span>
+            <svg class="xp-spark" viewBox="0 0 24 30"><path fill="currentColor" d="M12 0C12.7 8.6 15.5 13.3 24 15 15.5 16.7 12.7 21.4 12 30 11.3 21.4 8.5 16.7 0 15 8.5 13.3 11.3 8.6 12 0Z"/></svg>
+          </div>
+          <div class="xp-body">
+            <h3>Residências</h3>
+            <p>Casas e apartamentos, com o mesmo cuidado do atendimento empresarial.</p>
+            <ul class="xp-list">
+              <li>Cozinha e banheiros</li>
+              <li>Quartos e salas</li>
+              <li>Pisos e rodapés</li>
+              <li>Vidros e janelas</li>
+            </ul>
+            <button class="btn btn-teal xp-cta" type="button" data-tipo="Residência">Pedir orçamento deste serviço</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -404,7 +611,7 @@ p{text-wrap:pretty}
       </div>
       <div class="bento">
         <figure class="tile t-video">
-          <video id="vid" muted loop playsinline preload="none" poster="img/escritorio-poster.webp" data-src="video/escritorio.mp4" aria-label="Vídeo de um escritório comercial limpo, com o piso brilhando"></video>
+          <video id="vid" class="px" muted loop playsinline preload="none" poster="img/escritorio-poster.webp" data-src="video/escritorio.mp4" aria-label="Vídeo de um escritório comercial limpo, com o piso brilhando"></video>
           <figcaption>Escritório comercial</figcaption>
           <button class="vid-btn" id="vidBtn" type="button" aria-label="Pausar vídeo">
             <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
@@ -412,15 +619,15 @@ p{text-wrap:pretty}
           </button>
         </figure>
         <figure class="tile t-office">
-          <button class="zoom" type="button" aria-label="Ampliar foto: escritório"><img src="img/office.webp" alt="Escritório com piso de porcelanato brilhando, mesas e armários organizados" width="960" height="1280" loading="lazy" decoding="async"></button>
+          <button class="zoom px" type="button" aria-label="Ampliar foto: escritório"><img src="img/office.webp" alt="Escritório com piso de porcelanato brilhando, mesas e armários organizados" width="960" height="1280" loading="lazy" decoding="async"></button>
           <figcaption>Escritório</figcaption>
         </figure>
         <figure class="tile t-training">
-          <button class="zoom" type="button" aria-label="Ampliar foto: sala de treinamento"><img src="img/training.webp" alt="Sala de treinamento com cadeiras azuis enfileiradas e piso limpo" width="960" height="1280" loading="lazy" decoding="async"></button>
+          <button class="zoom px" type="button" aria-label="Ampliar foto: sala de treinamento"><img src="img/training.webp" alt="Sala de treinamento com cadeiras azuis enfileiradas e piso limpo" width="960" height="1280" loading="lazy" decoding="async"></button>
           <figcaption>Sala de treinamento</figcaption>
         </figure>
         <figure class="tile t-balcony">
-          <button class="zoom" type="button" aria-label="Ampliar foto: varanda depois da obra"><img src="img/balcony.webp" alt="Varanda depois da limpeza pós-obra, com o piso limpo" width="1280" height="960" loading="lazy" decoding="async"></button>
+          <button class="zoom px" type="button" aria-label="Ampliar foto: varanda depois da obra"><img src="img/balcony.webp" alt="Varanda depois da limpeza pós-obra, com o piso limpo" width="1280" height="960" loading="lazy" decoding="async"></button>
           <figcaption>Varanda depois da obra</figcaption>
         </figure>
       </div>
@@ -435,11 +642,11 @@ p{text-wrap:pretty}
         <p>A VC Soluções em Limpeza começou em junho de 2026, de um sonho antigo: depois de 12 anos trabalhando com limpeza, ter o próprio negócio, fazendo o que gosta.</p>
         <p>Hoje atendemos principalmente empresários: escritórios, clínicas, salas comerciais, condomínios e estabelecimentos de todo tipo. E também fazemos limpeza residencial.</p>
       </div>
-      <dl class="facts">
-        <div><dt>Experiência</dt><dd>12 anos em limpeza</dd></div>
-        <div><dt>Desde</dt><dd>Junho de 2026</dd></div>
-        <div><dt>Atendimento</dt><dd>Empresas e residências</dd></div>
-      </dl>
+      <ol class="tl" aria-label="Trajetória da VC">
+        <li><span class="tl-when">Há <b class="count">12</b> anos</span><span class="tl-what">Começa a trajetória na limpeza</span></li>
+        <li><span class="tl-when">Junho de 2026</span><span class="tl-what">Nasce a VC Soluções em Limpeza</span></li>
+        <li><span class="tl-when">Hoje</span><span class="tl-what">Atende empresas, condomínios e residências</span></li>
+      </ol>
     </div>
   </section>
 
@@ -513,6 +720,10 @@ p{text-wrap:pretty}
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>
             Prévia da sua mensagem
           </div>
+          <div class="pv-prog">
+            <span id="pvTxt">Seu pedido: 0 de 4 itens preenchidos</span>
+            <div class="pv-bar" aria-hidden="true"><i id="pvFill"></i></div>
+          </div>
           <div class="pv-body"><p class="bubble" id="bubble" aria-live="polite"></p></div>
           <div class="pv-foot">
             <p class="err" id="err" role="alert"></p>
@@ -536,23 +747,23 @@ p{text-wrap:pretty}
       <div class="faq">
         <details>
           <summary>Vocês atendem residências?<span class="pm" aria-hidden="true"></span></summary>
-          <p>Sim. Nosso foco é o atendimento a empresas, mas também fazemos limpeza de casas e apartamentos.</p>
+          <div class="faq-a"><p>Sim. Nosso foco é o atendimento a empresas, mas também fazemos limpeza de casas e apartamentos.</p></div>
         </details>
         <details>
           <summary>O que inclui a limpeza pós-obra?<span class="pm" aria-hidden="true"></span></summary>
-          <p>Tiramos a poeira, os respingos de tinta e os restos de rejunte e cimento que a obra deixa. O escopo exato a gente combina no orçamento, conforme o seu espaço.</p>
+          <div class="faq-a"><p>Tiramos a poeira, os respingos de tinta e os restos de rejunte e cimento que a obra deixa. O escopo exato a gente combina no orçamento, conforme o seu espaço.</p></div>
         </details>
         <details>
           <summary>Atendem condomínios e clínicas?<span class="pm" aria-hidden="true"></span></summary>
-          <p>Sim. Atendemos condomínios, clínicas, consultórios, escritórios, salas comerciais e outros estabelecimentos.</p>
+          <div class="faq-a"><p>Sim. Atendemos condomínios, clínicas, consultórios, escritórios, salas comerciais e outros estabelecimentos.</p></div>
         </details>
         <details>
           <summary>Como peço um orçamento?<span class="pm" aria-hidden="true"></span></summary>
-          <p>Monte seu pedido no formulário desta página ou chame direto no WhatsApp. É só contar o tipo de espaço, o tamanho aproximado e a frequência que você precisa.</p>
+          <div class="faq-a"><p>Monte seu pedido no formulário desta página ou chame direto no WhatsApp. É só contar o tipo de espaço, o tamanho aproximado e a frequência que você precisa.</p></div>
         </details>
         <details>
           <summary>Preciso saber a metragem exata?<span class="pm" aria-hidden="true"></span></summary>
-          <p>Não. Uma ideia aproximada já ajuda. Se não souber, marque “Não sei” e a gente conversa.</p>
+          <div class="faq-a"><p>Não. Uma ideia aproximada já ajuda. Se não souber, marque “Não sei” e a gente conversa.</p></div>
         </details>
       </div>
     </div>
@@ -620,6 +831,17 @@ p{text-wrap:pretty}
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var root = document.documentElement;
+  function contar(el, de, ate, dur) {
+    if (reduce) { el.textContent = ate; return; }
+    var t0 = 0;
+    function f(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      el.textContent = Math.round(de + (ate - de) * p);
+      if (p < 1) requestAnimationFrame(f);
+    }
+    requestAnimationFrame(f);
+  }
 
   $$('.wa-link').forEach(function (a) { a.href = waURL(MSG_PADRAO); });
   $('#ano').textContent = new Date().getFullYear();
@@ -707,6 +929,25 @@ p{text-wrap:pretty}
     setPos(50);
   }
 
+  /* ---------- hero: tipo de espaço que gira ---------- */
+  var rotW = $$('.rot-w'), rotI = 0, heroVisivel = true;
+  function girar() {
+    var atual = rotW[rotI], prox = rotW[(rotI + 1) % rotW.length];
+    atual.classList.remove('on'); atual.classList.add('out');
+    prox.classList.add('on');
+    setTimeout(function () {
+      atual.style.transition = 'none'; atual.classList.remove('out');
+      atual.getBoundingClientRect(); atual.style.transition = '';
+    }, 650);
+    rotI = (rotI + 1) % rotW.length;
+  }
+  if (!reduce && rotW.length > 1) {
+    setInterval(function () { if (heroVisivel && !document.hidden) girar(); }, 2600);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { heroVisivel = es[0].isIntersecting; }).observe(hero);
+    }
+  }
+
   /* ---------- serviços -> formulário ---------- */
   var form = $('#form');
   function selectTipo(v) {
@@ -717,7 +958,95 @@ p{text-wrap:pretty}
     $('#orcamento').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
     setTimeout(function () { input.focus({ preventScroll: true }); }, reduce ? 0 : 700);
   }
-  $$('.svc-btn').forEach(function (b) { b.addEventListener('click', function () { selectTipo(b.dataset.tipo); }); });
+  $$('.xp-cta').forEach(function (b) { b.addEventListener('click', function () { selectTipo(b.dataset.tipo); }); });
+
+  /* ---------- serviços: explorador com checklist animado ---------- */
+  var xp = $('#xp'), xpTabs = $$('.xp-tab', xp), xpPaineis = $$('.xp-panel', xp), CIRC = 2 * Math.PI * 52;
+  var xpI = 0, xpAuto = !reduce, xpNaTela = false, xpParado = false, xpRun = [];
+  var holdT = 0, holdResta = 0, holdInicio = 0, segurando = false;
+  var PASSO = 430, SEGURA = 2600;
+  xp.style.setProperty('--xphold', SEGURA + 'ms');
+
+  function limparRun() { xpRun.forEach(clearTimeout); xpRun = []; }
+  function pararHold() { clearTimeout(holdT); holdT = 0; segurando = false; xp.classList.remove('holding', 'paused'); }
+  function rodarHold() {
+    if (!segurando || holdT || !xpNaTela || xpParado) return;
+    holdInicio = Date.now(); xp.classList.remove('paused');
+    holdT = setTimeout(function () { holdT = 0; pararHold(); ativar(xpI + 1); }, holdResta);
+  }
+  function pausarHold() {
+    if (!segurando) return;
+    xp.classList.add('paused');
+    if (holdT) { clearTimeout(holdT); holdT = 0; holdResta = Math.max(0, holdResta - (Date.now() - holdInicio)); }
+  }
+  function iniciarHold() {
+    if (!xpAuto) return;
+    segurando = true; holdResta = SEGURA; holdT = 0;
+    xp.classList.remove('holding'); xp.getBoundingClientRect(); xp.classList.add('holding');
+    if (!xpNaTela || xpParado) xp.classList.add('paused'); else rodarHold();
+  }
+  function rodarPainel(p) {
+    limparRun();
+    var itens = $$('.xp-list li', p), prog = $('.xp-prog', p), pct = $('.xp-pct b', p), n = itens.length;
+    if (reduce) {
+      itens.forEach(function (li) { li.classList.add('done'); });
+      prog.style.strokeDashoffset = 0; pct.textContent = '100'; p.classList.add('done');
+      return;
+    }
+    p.classList.remove('done');
+    itens.forEach(function (li) { li.classList.remove('done'); });
+    prog.style.transition = 'none'; prog.style.strokeDashoffset = CIRC; prog.getBoundingClientRect(); prog.style.transition = '';
+    pct.textContent = '0';
+    itens.forEach(function (li, k) {
+      xpRun.push(setTimeout(function () {
+        li.classList.add('done');
+        prog.style.strokeDashoffset = CIRC * (1 - (k + 1) / n);
+        contar(pct, Math.round(k / n * 100), Math.round((k + 1) / n * 100), PASSO - 80);
+        if (k === n - 1) { p.classList.add('done'); iniciarHold(); }
+      }, 300 + k * PASSO));
+    });
+  }
+  function ativar(i, foco) {
+    xpI = (i + xpTabs.length) % xpTabs.length;
+    xpTabs.forEach(function (t, k) {
+      var on = k === xpI;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    xpPaineis.forEach(function (p, k) { p.hidden = k !== xpI; });
+    var tab = xpTabs[xpI], lista = tab.parentNode;
+    if (lista.scrollWidth > lista.clientWidth + 2) {
+      var dx = tab.getBoundingClientRect().left - lista.getBoundingClientRect().left + lista.scrollLeft - 16;
+      lista.scrollTo({ left: dx, behavior: reduce ? 'auto' : 'smooth' });
+    }
+    if (foco) tab.focus();
+    rodarPainel(xpPaineis[xpI]);
+  }
+  function manual(i, foco) { xpAuto = false; pararHold(); ativar(i, foco); }
+  xpTabs.forEach(function (t, k) {
+    t.addEventListener('click', function () { manual(k); });
+    t.addEventListener('keydown', function (e) {
+      var d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (d) { e.preventDefault(); manual(xpI + d, true); }
+      else if (e.key === 'Home') { e.preventDefault(); manual(0, true); }
+      else if (e.key === 'End') { e.preventDefault(); manual(xpTabs.length - 1, true); }
+    });
+  });
+  /* pausa enquanto o visitante está lendo (mouse ou foco dentro do quadro) */
+  xp.addEventListener('mouseenter', function () { xpParado = true; pausarHold(); });
+  xp.addEventListener('mouseleave', function () { xpParado = false; rodarHold(); });
+  xp.addEventListener('focusin', function () { xpParado = true; pausarHold(); });
+  xp.addEventListener('focusout', function (e) { if (!xp.contains(e.relatedTarget)) { xpParado = false; rodarHold(); } });
+  if ('IntersectionObserver' in window) {
+    var xpPrimeira = true;
+    new IntersectionObserver(function (es) {
+      xpNaTela = es[0].isIntersecting;
+      if (xpNaTela && xpPrimeira) { xpPrimeira = false; ativar(0); }
+      if (xpNaTela) rodarHold(); else pausarHold();
+    }, { threshold: 0.35 }).observe(xp);
+  } else {
+    xpNaTela = true; ativar(0);
+  }
 
   /* ---------- vídeo ---------- */
   var vid = $('#vid'), vidBtn = $('#vidBtn'), userPaused = reduce, vidReady = null;
@@ -773,8 +1102,60 @@ p{text-wrap:pretty}
     else if (e.key === 'ArrowRight') show(cur + 1);
   });
 
+  /* ---------- movimento ligado à rolagem: linha do tempo e fotos ---------- */
+  if (!reduce) {
+    var tl = $('.tl'), tlItens = tl ? $$('li', tl) : [], contador = $('.tl .count'), contado = false;
+    var pxEls = $$('.px'), tick = false;
+    if (contador) contador.textContent = '0';
+    function quadro() {
+      tick = false;
+      var vh = window.innerHeight;
+      if (tl) {
+        var r = tl.getBoundingClientRect();
+        var p = Math.max(0, Math.min(1, (vh * 0.85 - r.top) / (vh * 0.3 + r.height)));
+        tl.style.setProperty('--tp', p.toFixed(3));
+        var alcance = 8 + (r.height - 16) * p;
+        tlItens.forEach(function (li) { li.classList.toggle('on', alcance >= li.offsetTop + 10); });
+        if (!contado && contador && tlItens[0].classList.contains('on')) { contado = true; contar(contador, 0, 12, 900); }
+      }
+      pxEls.forEach(function (el) {
+        var t = el.parentNode.getBoundingClientRect();
+        if (t.bottom < -80 || t.top > vh + 80) return;
+        var c = (t.top + t.height / 2 - vh / 2) / (vh / 2 + t.height / 2);
+        el.style.setProperty('--py', (c * t.height * -0.05).toFixed(1) + 'px');
+      });
+    }
+    window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(quadro); } }, { passive: true });
+    window.addEventListener('resize', quadro);
+    quadro();
+  }
+
+  /* ---------- perguntas: abrir e fechar com animação ---------- */
+  $$('.faq details').forEach(function (d) {
+    var s = $('summary', d), a = $('.faq-a', d), anim = null;
+    s.addEventListener('click', function (e) {
+      if (reduce || !a.animate) return;
+      e.preventDefault();
+      var fechar = d.open && !d.classList.contains('closing');
+      var hIni = a.getBoundingClientRect().height;
+      if (anim) { anim.cancel(); anim = null; }
+      var opts = { duration: 300, easing: 'cubic-bezier(.2,.7,.2,1)' };
+      if (fechar) {
+        d.classList.add('closing');
+        anim = a.animate([{ height: hIni + 'px' }, { height: '0px' }], opts);
+        anim.onfinish = function () { d.open = false; d.classList.remove('closing'); anim = null; };
+      } else {
+        d.classList.remove('closing');
+        d.open = true;
+        anim = a.animate([{ height: hIni + 'px' }, { height: a.scrollHeight + 'px' }], opts);
+        anim.onfinish = function () { anim = null; };
+      }
+    });
+  });
+
   /* ---------- formulário + prévia ---------- */
   var bubble = $('#bubble'), err = $('#err'), local = $('#local'), nome = $('#nome'), obs = $('#obs'), fsTipo = $('#fsTipo'), fsFreq = $('#fsFreq');
+  var pvFill = $('#pvFill'), pvTxt = $('#pvTxt'), pvProg = $('.pv-prog'), btnEnviar = $('.pv-foot .btn'), passo1 = $('.steps li'), ultimo = null;
   function val(name) { var i = form.querySelector('input[name="' + name + '"]:checked'); return i ? i.value : ''; }
   function isPosObra() { return val('tipo') === 'Pós-obra'; }
   function linhas() {
@@ -787,17 +1168,36 @@ p{text-wrap:pretty}
     if (obs.value.trim()) L.push({ k: 'Observação', v: obs.value.trim() });
     return L;
   }
+  function progresso() {
+    var itens = isPosObra() ? [val('tipo'), val('tam'), local.value.trim()] : [val('tipo'), val('freq'), val('tam'), local.value.trim()];
+    var feitos = itens.filter(Boolean).length, total = itens.length, completo = feitos === total;
+    pvFill.style.width = (feitos / total * 100) + '%';
+    pvTxt.textContent = completo ? 'Pedido completo. É só enviar.' : 'Seu pedido: ' + feitos + ' de ' + total + ' itens preenchidos';
+    pvProg.classList.toggle('full', completo);
+    btnEnviar.classList.toggle('ready', completo);
+    passo1.classList.toggle('done', !!val('tipo') && !!local.value.trim());
+  }
   function render() {
     fsFreq.classList.toggle('hidden', isPosObra());
-    var L = linhas();
+    var L = linhas(), agora = {};
     bubble.textContent = '';
     L.forEach(function (l, i) {
       if (i) bubble.appendChild(document.createTextNode('\n'));
       if (l.t != null) { bubble.appendChild(document.createTextNode(l.t)); return; }
-      var b = document.createElement('b'); b.textContent = l.k + ': '; bubble.appendChild(b);
-      if (l.v) bubble.appendChild(document.createTextNode(l.v));
-      else { var s = document.createElement('span'); s.className = 'ph'; s.textContent = l.ph; bubble.appendChild(s); }
+      var ln = document.createElement('span'); ln.className = 'ln';
+      var b = document.createElement('b'); b.textContent = l.k + ': '; ln.appendChild(b);
+      if (l.v) ln.appendChild(document.createTextNode(l.v));
+      else { var s = document.createElement('span'); s.className = 'ph'; s.textContent = l.ph; ln.appendChild(s); }
+      bubble.appendChild(ln);
+      agora[l.k] = l.v || '';
+      /* destaca a linha que acabou de mudar */
+      if (ultimo && l.v && ultimo[l.k] !== l.v && !reduce) {
+        ln.classList.add('flash');
+        requestAnimationFrame(function () { requestAnimationFrame(function () { ln.classList.remove('flash'); }); });
+      }
     });
+    ultimo = agora;
+    progresso();
   }
   function faltando() {
     var f = [];
